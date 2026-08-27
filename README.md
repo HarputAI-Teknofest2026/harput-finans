@@ -1827,6 +1827,23 @@ dosyasıdır.
 
 ---
 
+## Veri Setini İndir
+
+Harput Finans kapsamında oluşturulan 10 katılım bankasına ait birleşik final veri seti herkese açık olarak aşağıdaki bağlantıdan indirilebilir:
+
+**Master Veri Seti:**  
+https://raw.githubusercontent.com/HarpuAI-Teknofest2026/harput-finans/main/data/final_banks/katilim_finans_master.json
+
+Banka bazlı final veri dosyalarının tamamı:
+
+https://github.com/HarpuAI-Teknofest2026/harput-finans/tree/main/data/final_banks
+
+Veri seti toplam **530 kayıt** içermektedir:
+
+- 116 finansman ürünü
+- 414 kampanya
+- 10 katılım bankası
+
 # Test Verileri
 
 ```text
