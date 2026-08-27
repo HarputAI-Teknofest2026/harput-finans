@@ -1791,6 +1791,15 @@ playwright install
 
 ---
 
+# Uygulamayı Çalıştırma
+
+Harput Finans'ın ana uygulaması Google Colab / Jupyter Notebook ortamında çalışacak şekilde hazırlanmıştır.
+
+Ana uygulama notebooku:
+
+```text
+colab dosyaları/uygulama dosyaları/Harput_Finanas.ipynb
+
 # Ollama
 
 AI bileşenlerinin çalışabilmesi için yerel Ollama servisi gerekmektedir.
