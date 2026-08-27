@@ -1800,22 +1800,50 @@ Ana uygulama notebooku:
 
 ```text
 colab dosyaları/uygulama dosyaları/Harput_Finanas.ipynb
+```
 
-# Ollama
+Bu notebook içerisinde;
 
-AI bileşenlerinin çalışabilmesi için yerel Ollama servisi gerekmektedir.
+- Master veri setinin yüklenmesi
+- Yapay zeka modellerinin hazırlanması
+- AI Asistan'ın başlatılması
+- Bilgi Çıkarımı bileşeninin çalıştırılması
+- FastAPI backend'in oluşturulması
+- Web arayüzünün başlatılması
 
-Ollama servisi:
+işlemleri gerçekleştirilmektedir.
+
+---
+
+## 1. Ollama'nın Hazırlanması
+
+Harput Finans'ın yapay zeka bileşenleri Ollama üzerinden yerel olarak çalıştırılmaktadır.
+
+Ollama servisinin çalışıp çalışmadığını kontrol etmek için:
+
+```bash
+ollama list
+```
+
+Servis aktif değilse:
 
 ```bash
 ollama serve
 ```
 
-komutuyla başlatılabilir.
+komutu ile başlatılabilir.
 
-Kullanılacak modellerin ayrıca yerel sisteme kurulmuş olması gerekir.
+Uygulamada kullanılan varsayılan Ollama adresi:
+
+```text
+http://127.0.0.1:11434
+```
+
+şeklindedir.
+
 
 ---
+
 
 # Final Dataset
 
