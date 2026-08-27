@@ -1973,3 +1973,8 @@ dosyasında bulunmaktadır.
 ## Harput Finans
 
 **Katılım finansını daha anlaşılır hale getiriyoruz.**
+
+## Yarışma Etiketleri
+
+- Bilişim Vadisi 2026: `BilisimVadisi2026`
+- Türkiye Açık Kaynak Platformu: [@tracikkaynak](https://github.com/tracikkaynak)
