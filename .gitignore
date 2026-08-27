@@ -1,0 +1,37 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE / macOS
+.idea/
+.vscode/
+.DS_Store
+__MACOSX/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Ham ve ara veriler
+data/raw/
+data/processed/
+data/generated/
+
+# Büyük model dosyaları
+*.gguf
+*.safetensors
+
+# Node
+node_modules/
+colab dosyaları/uygulama dosyaları/katilim_finans_master.json

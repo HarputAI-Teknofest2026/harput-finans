@@ -1,0 +1,27 @@
+[
+    {
+        "banka": "Adil Katılım Bankası A.Ş.",
+        "kayit_turu": "finansman",
+        "urun_adi": "Bireysel Finansman",
+        "urun_kategorisi": "Bireysel Finansman",
+        "kar_payi_orani": [],
+        "finansman_orani": [],
+        "finansman_tutari": [],
+        "vade": [],
+        "taksit_sayisi": [],
+        "masraf_bilgisi": [],
+        "kampanya_turu": "",
+        "kampanya_avantaji": [],
+        "kampanya_suresi": "",
+        "hedef_kitle": [
+            "Bireysel müşteriler"
+        ],
+        "para_birimi": [],
+        "kosullar": [
+            "Finansmana konu ürün veya hizmet katılım esaslarına uygun olmalıdır.",
+            "Müşterinin talep ettiği ürün veya hizmet banka tarafından satın alınır ve üzerine kâr eklenerek vadeli olarak müşteriye satılır."
+        ],
+        "kaynak_url": "https://www.adilkatilim.com.tr/katilim-bankaciligi/urun-ve-hizmetler",
+        "ham_metin": "Bireysel Finansman Bireysel müşterilerimize eğitim, sağlık, tatil, ev eşyası gibi bireysel ihtiyaçların karşılanması amacıyla sağladığımız faizsiz finansman türüdür. Müşterimizin talebi üzerine istenilen katılım esaslarına uygun ürün veya hizmet bankamız tarafından alınır ve üzerine kâr eklenerek vadeli ödenmek üzere kendisine satılır."
+    }
+]
