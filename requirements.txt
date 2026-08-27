@@ -6,5 +6,6 @@ selenium
 fastapi
 uvicorn
 pydantic
-langgraph
+httpx
+langgraph==1.2.11
 Pillow
