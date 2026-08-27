@@ -1795,6 +1795,7 @@ playwright install
 
 Harput Finans'ın ana uygulaması Google Colab / Jupyter Notebook ortamında çalışacak şekilde hazırlanmıştır.
 
+
 Ana uygulama notebooku:
 
 ```text
