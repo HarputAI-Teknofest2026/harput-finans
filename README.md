@@ -1,58 +1,103 @@
 # Harput Finans
 
-**Harput Finans**, katılım bankalarının finansman ürünleri ve kampanyalarını resmî kaynaklardan toplayan, doğal dil işleme ve yapay zekâ yöntemleriyle yapılandırılmış veriye dönüştüren, bankalar arası karşılaştırma yapabilen ve kullanıcıya web tabanlı bir **AI Asistan** üzerinden sunan karar destek platformudur.
+> **TEKNOFEST 2026 Yapay Zeka Dil Ajanları Yarışması**  
+> **Katılım Bankacılığı Finansal Metin Madenciliği**
 
-Proje, **TEKNOFEST 2026 Yapay Zeka Dil Ajanları Yarışması – 2. Senaryo** kapsamında geliştirilmiştir.
+**Harput Finans**, Türkiye'deki katılım bankalarının finansman ürünleri ve kampanyalarını resmî web kaynaklarından toplayan, ortak bir veri şemasına dönüştüren, yapılandırılmış finansal bilgi çıkarımı gerçekleştiren ve kullanıcıların doğal dildeki sorularına kaynak-temelli yanıtlar üreten bir finansal dil ajanıdır.
+
+Proje; veri toplama, veri normalizasyonu, finansal bilgi çıkarımı, deterministik kayıt getirme, banka karşılaştırma, çok turlu konuşma, kaynak doğrulama ve web tabanlı yapay zekâ asistanını tek bir uçtan uca sistemde birleştirir.
 
 ---
 
-## İçindekiler
+## Proje Özeti
 
-* [Proje Hakkında](#proje-hakkında)
-* [Problem](#problem)
-* [Geliştirilen Çözüm](#geliştirilen-çözüm)
-* [Temel Özellikler](#temel-özellikler)
-* [Sistem Akışı](#sistem-akışı)
-* [Veri Seti](#veri-seti)
-* [Desteklenen Katılım Bankaları](#desteklenen-katılım-bankaları)
-* [Standart Veri Şeması](#standart-veri-şeması)
-* [Proje Klasör Yapısı](#proje-klasör-yapısı)
-* [app/discovery](#appdiscovery)
-* [app/scrapers](#appscrapers)
-* [app/processors](#appprocessors)
-* [app/dynamic_extractor](#appdynamic_extractor)
-* [data/final_banks](#datafinal_banks)
-* [Colab Dosyaları](#colab-dosyaları)
-* [AI Asistan](#ai-asistan)
-* [Bilgi Çıkarımı](#bilgi-çıkarımı)
-* [Web Arayüzü](#web-arayüzü)
-* [API Yapısı](#api-yapısı)
-* [Kullanılan Yapay Zeka Modelleri](#kullanılan-yapay-zeka-modelleri)
-* [On-Premise Yaklaşımı](#on-premise-yaklaşımı)
-* [Teknolojiler](#teknolojiler)
-* [Kurulum](#kurulum)
-* [Lisans](#lisans)
+| Özellik | Değer |
+|---|---:|
+| Desteklenen katılım bankası | **10** |
+| Toplam kayıt | **530** |
+| Finansman ürünü | **116** |
+| Kampanya | **414** |
+| Bilgi çıkarımı alanı | **9** |
+| AI Asistan modeli | **Qwen3.5 35B A3B Q8** |
+| Bilgi çıkarımı modeli | **Qwen3-Coder-Next** |
+| Agent orkestrasyonu | **LangGraph** |
+| Yerel model çalışma altyapısı | **Ollama** |
+| Backend | **FastAPI** |
+
+---
+
+## Öne Çıkan Değerlendirme Sonuçları
+
+Harput Finans tek bir doğruluk metriğiyle değerlendirilmemiştir. Sistem farklı görev katmanlarında ayrı ayrı test edilmiştir.
+
+| Değerlendirme Katmanı | Sonuç |
+|---|---:|
+| Niyet Sınıflandırma Doğruluğu | **%94.00 — 47/50** |
+| Ham Alan/Filtre Çıkarımı | **%74.42 — 128/172** |
+| Sayısal Finansal Grounding | **%100 — 92/92** |
+| Retrieval Micro Precision | **%100** |
+| Retrieval Micro Recall | **%100** |
+| Retrieval Micro F1 | **%100** |
+| Retrieval Exact Set Match | **%100 — 24/24** |
+| Retrieved-record Source Integrity | **%100 — 130/130** |
+| Çok Turlu Context Kontrolü — Post-fix | **%100 — 77/77** |
+| Çok Turlu Senaryo Exact Success — Post-fix | **%100 — 10/10** |
+| No-data Safety — Post-fix | **%100 — 108/108** |
+| No-data Case Exact — Post-fix | **%100 — 12/12** |
+
+> **Not:** Bu sonuçlar birbirinden farklı değerlendirme katmanlarına aittir.  
+> Tek bir **“Harput Finans genel doğruluğu”** olarak birleştirilmemelidir.
+
+---
+
+# İçindekiler
+
+- [Proje Hakkında](#proje-hakkında)
+- [Problem](#problem)
+- [Geliştirilen Çözüm](#geliştirilen-çözüm)
+- [Temel Tasarım İlkeleri](#temel-tasarım-ilkeleri)
+- [Sistem Mimarisi](#sistem-mimarisi)
+- [Veri Seti](#veri-seti)
+- [Desteklenen Katılım Bankaları](#desteklenen-katılım-bankaları)
+- [Standart Veri Şeması](#standart-veri-şeması)
+- [Bilgi Çıkarımı](#bilgi-çıkarımı)
+- [AI Asistan](#ai-asistan)
+- [Deterministik Finansal Araçlar](#deterministik-finansal-araçlar)
+- [Çok Turlu Konuşma](#çok-turlu-konuşma)
+- [Kaynak ve Finansal Değer Güvenliği](#kaynak-ve-finansal-değer-güvenliği)
+- [Değerlendirme](#değerlendirme)
+- [Web Arayüzü](#web-arayüzü)
+- [API](#api)
+- [Kullanılan Modeller](#kullanılan-modeller)
+- [On-Premise Yaklaşımı](#on-premise-yaklaşımı)
+- [Teknolojiler](#teknolojiler)
+- [Proje Yapısı](#proje-yapısı)
+- [Kurulum](#kurulum)
+- [Uygulamayı Çalıştırma](#uygulamayı-çalıştırma)
+- [Veri Güvenliği](#veri-güvenliği)
+- [Lisans](#lisans)
 
 ---
 
 # Proje Hakkında
 
-Katılım bankaları finansman ürünleri ve kampanyalarını kendi resmî web sitelerinde yayınlamaktadır.
+Katılım bankaları finansman ürünleri ve kampanyalarını kendi resmî web sitelerinde yayımlamaktadır.
 
 Ancak bankalar arasında;
 
-* sayfa yapıları,
-* kullanılan finansal ifadeler,
-* kategori isimleri,
-* kampanya açıklamaları,
-* vade gösterimleri,
-* kâr payı ifadeleri,
-* ücret ve masraf tanımları,
-* kampanya avantajları
+- sayfa yapıları,
+- kategori isimleri,
+- kâr payı gösterimleri,
+- finansman tutarı ifadeleri,
+- vade formatları,
+- kampanya açıklamaları,
+- ücret ve masraf tanımları,
+- kampanya avantajları,
+- hedef müşteri tanımları
 
 standart değildir.
 
-Örneğin aynı finansal bilgi farklı kaynaklarda;
+Örneğin aynı finansal bilgi farklı kaynaklarda şu biçimlerde ifade edilebilir:
 
 ```text
 %2,05 kâr payı oranı
@@ -61,59 +106,64 @@ standart değildir.
 avantajlı kâr payı fırsatı
 ```
 
-gibi farklı biçimlerde ifade edilebilir.
-
-Harput Finans bu dağınık verileri ortak bir yapıya dönüştürerek farklı katılım bankalarının ürünlerinin aynı sistem üzerinden incelenebilmesini sağlar.
+Harput Finans bu heterojen yapıyı ortak bir veri katmanına dönüştürerek farklı katılım bankalarının finansman ürünleri ve kampanyalarının tek sistem üzerinden sorgulanmasını sağlar.
 
 ---
 
 # Problem
 
-Bir banka çalışanının veya kullanıcının farklı katılım bankalarının finansman seçeneklerini karşılaştırmak istemesi durumunda her bankanın web sitesini ayrı ayrı incelemesi gerekmektedir.
+Bir kullanıcı veya banka çalışanı farklı katılım bankalarının ürünlerini karşılaştırmak istediğinde her bankanın web sitesini ayrı ayrı incelemek zorundadır.
 
-Bu durum özellikle;
+Bu süreç;
 
-* konut finansmanı,
-* taşıt finansmanı,
-* ihtiyaç finansmanı,
-* işyeri finansmanı,
-* arsa finansmanı,
-* alışveriş finansmanı,
-* eğitim finansmanı,
-* kart kampanyaları,
-* indirim kampanyaları,
-* alışveriş puanı kampanyaları
+- konut finansmanı,
+- taşıt finansmanı,
+- ihtiyaç finansmanı,
+- işyeri finansmanı,
+- arsa finansmanı,
+- alışveriş finansmanı,
+- eğitim finansmanı,
+- kart kampanyaları,
+- indirim kampanyaları,
+- taksit kampanyaları,
+- puan ve ödül kampanyaları
 
-gibi çok sayıda ürün ve kampanya bulunduğunda manuel olarak yönetilmesi zor bir sürece dönüşmektedir.
+gibi çok sayıda ürün olduğunda zaman alıcı ve hata yapmaya açık hâle gelmektedir.
 
-Harput Finans'ın temel amacı bu süreci otomatikleştirmektir.
+Harput Finans'ın temel amacı bu süreci otomatikleştirerek kullanıcıya:
+
+1. ortak bir veri katmanı,
+2. doğal dilde sorgulama,
+3. deterministik karşılaştırma,
+4. kaynak-temelli cevap,
+5. çok turlu konuşma
+
+imkânı sunmaktır.
 
 ---
 
 # Geliştirilen Çözüm
 
-Harput Finans uçtan uca aşağıdaki işlemleri gerçekleştirir:
+Harput Finans uçtan uca aşağıdaki akışı kullanır:
 
 ```text
 Katılım Bankalarının
 Resmî Web Siteleri
         │
         ▼
-Veri Keşfi ve
-Web Scraping
+Veri Keşfi
+ve Web Scraping
         │
         ▼
 Ham Finansman /
 Kampanya Metinleri
         │
         ▼
-Bilgi Çıkarımı
+Alan Çıkarımı
+ve Normalizasyon
         │
         ▼
-Normalizasyon
-        │
-        ▼
-Validasyon ve
+Validasyon /
 Kalite Kontrol
         │
         ▼
@@ -130,246 +180,170 @@ Master Dataset
         └─────────────► AI Asistan
                                │
                                ▼
-                        Kullanıcı Sorusu
+                         Kullanıcı Sorusu
                                │
                                ▼
-                      Filtreleme / Arama /
-                        Karşılaştırma
+                       Niyet / Filtre Analizi
                                │
                                ▼
-                        Kaynaklı Yanıt
+                       Deterministik Araçlar
+                               │
+                               ▼
+                       Kaynak-Temelli Yanıt
 ```
 
 ---
 
-# Temel Özellikler
+# Temel Tasarım İlkeleri
 
-## 1. Çoklu Banka Veri Toplama
+## 1. LLM finansal değeri hesaplamaz
 
-Katılım bankalarının resmî web sitelerindeki finansman ve kampanya sayfaları banka yapısına uygun scraperlar kullanılarak toplanır.
+Harput Finans'ta yapay zekâ modeli doğrudan finansal karşılaştırma sonucunu hesaplayan güven kaynağı değildir.
+
+Finansal kayıt getirme, filtreleme ve karşılaştırma işlemleri mümkün olduğunca deterministik Python araçları tarafından gerçekleştirilir.
+
+> **LLM finansal değeri sayısal olarak karar vermek için değil, kullanıcının isteğini anlamak ve deterministik tool çıktısını doğal dile çevirmek için kullanılır.**
 
 ---
 
-## 2. Finansal Bilgi Çıkarımı
+## 2. Bilgi çıkarımında model değer tahmin etmez
 
-Doğal dilde bulunan finansman metinlerinden karar vermede kullanılabilecek alanlar çıkarılır.
+Harput Finans'ın dinamik bilgi çıkarımı yaklaşımının temel prensibi:
 
-Örneğin:
+> **Model finansal değeri tahmin etmiyor; o değeri çıkaracak programı yazıyor.**
 
-```text
-Yeni müşterilerimize özel %2,89 kâr payı oranıyla
-250.000 TL'ye kadar 24 ay vadeli finansman...
+LLM, kaynak metni analiz ederek Python ve regex tabanlı bir extractor üretir.
+
+Üretilen program çalıştırılarak kaynak metindeki finansal alanlar çıkarılır.
+
+---
+
+## 3. Kaynakta olmayan bilgi boş bırakılır
+
+Bir finansal alan kaynak metinde açık biçimde bulunmuyorsa modelden tahmin edilmesi istenmez.
+
+Örneğin kaynakta vade yoksa:
+
+```json
+{
+  "vade": []
+}
 ```
 
-gibi bir metin içerisinden;
+döndürülür.
+
+---
+
+## 4. Kaynak URL'leri model tarafından üretilmez
+
+Kullanıcıya gösterilen resmî kaynaklar doğrudan veri setindeki `kaynak_url` alanlarından alınır.
+
+Kaynak bağlantıları LLM tarafından yeniden oluşturulmaz.
+
+---
+
+# Sistem Mimarisi
+
+Harput Finans üç ana kullanıcı modülüne sahiptir:
 
 ```text
-Kâr Payı Oranı → %2,89
-Finansman Tutarı → 250.000 TL'ye kadar
-Vade → 24 ay
-Hedef Kitle → Yeni müşteriler
-Para Birimi → TL
+                    HARPUT FİNANS
+                         │
+              ┌──────────┼──────────┐
+              │          │          │
+              ▼          ▼          ▼
+         AI Asistan   Bilgi      Sistem &
+                     Çıkarımı      Veri
+              │          │          │
+              ▼          ▼          ▼
+           Sorgu       Serbest     Dataset
+        Karşılaştırma   Metin      İstatistik
+           Öneri        Analizi     Görüntüleme
 ```
 
-gibi yapılandırılmış alanlar oluşturulabilir.
-
----
-
-## 3. Veri Normalizasyonu
-
-Farklı bankalardan gelen veriler ortak veri şemasına dönüştürülür.
-
-Böylece farklı kaynaklardaki aynı anlama sahip bilgiler karşılaştırılabilir hale gelir.
-
----
-
-## 4. Finansman Kategorilerinin Canonical Hale Getirilmesi
-
-Finansman ürünleri ortak kategoriler altında sınıflandırılır.
-
-Master veri setinde kullanılan canonical finansman kategorileri arasında:
-
-* `IHTIYAC_FINANSMANI`
-* `KONUT_FINANSMANI`
-* `TASIT_FINANSMANI`
-* `ISYERI_FINANSMANI`
-* `ARSA_FINANSMANI`
-* `ALISVERIS_FINANSMANI`
-* `EGITIM_FINANSMANI`
-* `BES_TEMINATLI_FINANSMAN`
-* `YATIRIM_FINANSMANI`
-* `KENTSEL_DONUSUM_FINANSMANI`
-* `TOKI`
-* `ENERJI_FINANSMANI`
-
-bulunmaktadır.
-
----
-
-## 5. Bankalar Arası Karşılaştırma
-
-Sistem farklı bankalardaki benzer finansman ürünlerini ortak kriterler üzerinden karşılaştırabilir.
-
-Örneğin:
-
-* kâr payı oranı,
-* finansman oranı,
-* finansman tutarı,
-* vade,
-* taksit sayısı,
-* masraf bilgileri,
-* kampanya avantajları,
-* hedef müşteri,
-* ürün koşulları
-
-karşılaştırma sırasında kullanılabilir.
-
----
-
-## 6. AI Asistan
-
-Kullanıcı sistemdeki veri şemasını bilmek zorunda değildir.
-
-Doğal dilde;
+AI Asistan tarafındaki ana akış:
 
 ```text
-Konut finansmanı seçeneklerini göster.
-```
-
-veya;
-
-```text
-Kuveyt Türk konut finansmanlarını göster.
-```
-
-veya;
-
-```text
-500.000 TL araç finansmanı için
-24 ay vadede hangi seçenekler var?
-```
-
-gibi sorular sorabilir.
-
-AI Asistan kullanıcının isteğini yorumlar ve ilgili yapılandırılmış veri üzerinden sonuç üretir.
-
----
-
-## 7. Multi-Turn Konuşma
-
-AI Asistan konuşma durumunu koruyabilmektedir.
-
-Örneğin:
-
-```text
-Kullanıcı:
-Konut finansmanı seçeneklerini göster.
-
-Kullanıcı:
-Sadece Kuveyt Türk olanları göster.
-```
-
-İkinci mesajda tekrar "konut finansmanı" ifadesinin yazılması gerekmez.
-
-Sistem önceki konuşmanın kapsamını kullanarak isteği yorumlar.
-
----
-
-## 8. Kaynaklı Yanıt
-
-Finansal bilgi sunulurken kayıtların resmî kaynak URL'leri korunmaktadır.
-
-Bu yaklaşım ile kullanıcının sunulan bilginin asıl banka sayfasına ulaşabilmesi hedeflenmektedir.
-
----
-
-## 9. Eksik Veri Güvenliği
-
-Kaynak metinde bulunmayan bilgiler tahmin edilerek oluşturulmaz.
-
-Eksik alanlar boş bırakılır.
-
-Bu yaklaşım özellikle finansal verilerde yapay zekâ kaynaklı yanlış bilgi üretme riskini azaltmayı amaçlamaktadır.
-
----
-
-# Sistem Akışı
-
-Harput Finans üç ana kullanıcı modülü üzerine kuruludur.
-
-```text
-                 HARPUT FİNANS
-                       │
-          ┌────────────┼────────────┐
-          │            │            │
-          ▼            ▼            ▼
-      AI Asistan    Bilgi       Sistem &
-                   Çıkarımı       Veri
-          │            │            │
-          ▼            ▼            ▼
-      Soru-Cevap    Serbest      Dataset
-      Karşılaştırma  Metin        İstatistik
-      Öneri          Analizi      Görüntüleme
+Kullanıcı Sorusu
+        │
+        ▼
+Structured Intent Parser
+        │
+        ▼
+Deterministik Guard / Routing
+        │
+        ▼
+LangGraph
+        │
+        ▼
+Deterministik Finansal Araçlar
+        │
+        ▼
+Tool Evidence
+        │
+        ▼
+Grounded Response Generator
+        │
+        ▼
+Kaynak-Temelli Doğal Dil Yanıtı
 ```
 
 ---
 
 # Veri Seti
 
-Harput Finans master veri seti toplam:
-
-**10 katılım bankasını**
-
-kapsamaktadır.
-
-Toplam veri:
+Harput Finans master veri seti toplam **530 kayıt** içermektedir.
 
 ```text
-530 kayıt
+10 katılım bankası
+
+116 finansman ürünü
+414 kampanya
+
+Toplam: 530 kayıt
 ```
 
-Bunun:
-
-```text
-116'sı finansman ürünü
-414'ü kampanya
-```
-
-kaydından oluşmaktadır.
-
-Master dataset:
+Ana veri dosyası:
 
 ```text
 data/final_banks/katilim_finans_master.json
 ```
 
-dosyasında bulunmaktadır.
+Master veri yapısı:
+
+```json
+{
+  "metadata": {},
+  "finansmanlar": [],
+  "kampanyalar": []
+}
+```
 
 ---
 
 # Desteklenen Katılım Bankaları
 
-| Katılım Bankası                     | Finansman | Kampanya |  Toplam |
-| ----------------------------------- | --------: | -------: | ------: |
-| Adil Katılım Bankası A.Ş.           |         1 |        0 |       1 |
-| Albaraka Türk Katılım Bankası A.Ş.  |        17 |       46 |      63 |
-| Dünya Katılım Bankası A.Ş.          |         6 |       43 |      49 |
-| Hayat Finans Katılım Bankası        |         3 |       11 |      14 |
-| Kuveyt Türk Katılım Bankası A.Ş.    |        30 |       73 |     103 |
-| T.O.M. Katılım Bankası A.Ş.         |         3 |       50 |      53 |
-| Türkiye Emlak Katılım Bankası A.Ş.  |        12 |       63 |      75 |
-| Türkiye Finans Katılım Bankası A.Ş. |        16 |       15 |      31 |
-| Vakıf Katılım Bankası A.Ş.          |         8 |       26 |      34 |
-| Ziraat Katılım Bankası A.Ş.         |        20 |       87 |     107 |
-| **TOPLAM**                          |   **116** |  **414** | **530** |
+| Katılım Bankası | Finansman | Kampanya | Toplam |
+|---|---:|---:|---:|
+| Adil Katılım Bankası A.Ş. | 1 | 0 | 1 |
+| Albaraka Türk Katılım Bankası A.Ş. | 17 | 46 | 63 |
+| Dünya Katılım Bankası A.Ş. | 6 | 43 | 49 |
+| Hayat Finans Katılım Bankası | 3 | 11 | 14 |
+| Kuveyt Türk Katılım Bankası A.Ş. | 30 | 73 | 103 |
+| T.O.M. Katılım Bankası A.Ş. | 3 | 50 | 53 |
+| Türkiye Emlak Katılım Bankası A.Ş. | 12 | 63 | 75 |
+| Türkiye Finans Katılım Bankası A.Ş. | 16 | 15 | 31 |
+| Vakıf Katılım Bankası A.Ş. | 8 | 26 | 34 |
+| Ziraat Katılım Bankası A.Ş. | 20 | 87 | 107 |
+| **TOPLAM** | **116** | **414** | **530** |
 
 ---
 
 # Standart Veri Şeması
 
-Finansman ve kampanya kayıtları mümkün olduğunca ortak alanlar üzerinden tutulmaktadır.
+Finansman ve kampanya kayıtları mümkün olduğunca ortak bir veri şeması üzerinden tutulmaktadır.
 
-Temel veri alanları:
+Temel alanlar:
 
 ```text
 banka
@@ -396,150 +370,9 @@ kaynak_url
 ham_metin
 ```
 
-## Alanların Açıklamaları
+## Finansman canonical alanları
 
-### `banka`
-
-Kaydın ait olduğu katılım bankasını belirtir.
-
----
-
-### `kayit_turu`
-
-Kaydın;
-
-```text
-finansman
-```
-
-veya;
-
-```text
-kampanya
-```
-
-olduğunu belirtir.
-
----
-
-### `urun_adi`
-
-Finansman ürünü veya kampanyanın adı.
-
----
-
-### `urun_kategorisi`
-
-Ürünün banka tarafından sunulduğu kategori.
-
----
-
-### `kar_payi_orani`
-
-Metinde açıkça belirtilen kâr payı oranlarını içerir.
-
----
-
-### `finansman_orani`
-
-Finansman oranı açıkça belirtiliyorsa ilgili değerleri içerir.
-
----
-
-### `finansman_tutari`
-
-Finansman için belirtilen tutar veya limitleri içerir.
-
----
-
-### `vade`
-
-Finansmana ilişkin vade seçeneklerini içerir.
-
----
-
-### `taksit_sayisi`
-
-Özellikle kart ve kampanya metinlerinde bulunan taksit sayılarını içerir.
-
----
-
-### `masraf_bilgisi`
-
-Tahsis ücreti, dosya masrafı ve benzeri maliyet bilgilerini içerir.
-
----
-
-### `kampanya_turu`
-
-Kaydın kampanya türünü belirtir.
-
----
-
-### `kampanya_avantaji`
-
-Kullanıcıya sağlanan;
-
-* indirim,
-* ödül,
-* puan,
-* ücretsiz hizmet,
-* masraf avantajı
-
-gibi faydaları içerir.
-
----
-
-### `kampanya_suresi`
-
-Kampanyanın geçerli olduğu tarih aralığını ifade eder.
-
----
-
-### `hedef_kitle`
-
-Kampanyanın veya finansmanın hedeflediği kullanıcı grubunu içerir.
-
-Örneğin:
-
-```text
-Yeni müşteriler
-Bireysel müşteriler
-Maaş müşterileri
-Belirli kart sahipleri
-```
-
----
-
-### `para_birimi`
-
-Finansal değerlerde kullanılan para birimlerini içerir.
-
----
-
-### `kosullar`
-
-Üründen veya kampanyadan faydalanmak için gereken şartları içerir.
-
----
-
-### `kaynak_url`
-
-Bilginin alındığı resmî banka sayfasıdır.
-
----
-
-### `ham_metin`
-
-Bilgi çıkarımı yapılmadan önce elde edilen kaynak metni içerir.
-
-Bu alan veri doğrulama ve geriye dönük kontrol için korunmaktadır.
-
----
-
-# Finansman Canonical Alanları
-
-Finansman kayıtlarında temel alanlara ek olarak:
+Finansman kayıtlarında ayrıca:
 
 ```text
 _canonical_category
@@ -549,25 +382,28 @@ _semantic_tags
 
 alanları bulunmaktadır.
 
-### `_canonical_category`
+`_canonical_category`, farklı bankaların farklı isimlerle sunduğu finansman ürünlerini ortak kategori altında toplar.
 
-Bankaların birbirinden farklı kategori isimlerini ortak finansman kategorilerine dönüştürür.
+Örnek kategoriler:
 
-### `_canonical_subtype`
+```text
+IHTIYAC_FINANSMANI
+KONUT_FINANSMANI
+TASIT_FINANSMANI
+ISYERI_FINANSMANI
+ARSA_FINANSMANI
+ALISVERIS_FINANSMANI
+EGITIM_FINANSMANI
+ENERJI_FINANSMANI
+KENTSEL_DONUSUM_FINANSMANI
+YATIRIM_FINANSMANI
+BES_TEMINATLI_FINANSMAN
+TOKI
+```
 
-Ana kategorinin daha spesifik alt türünü belirtir.
+## Kampanya canonical alanları
 
-### `_semantic_tags`
-
-Finansman ürününün anlamsal özelliklerini belirten etiketleri içerir.
-
-Bu alanlar AI Asistan'ın banka terminolojisinden bağımsız biçimde ürün bulabilmesine yardımcı olur.
-
----
-
-# Kampanya Canonical Alanları
-
-Kampanya kayıtlarında ayrıca:
+Kampanya kayıtlarında:
 
 ```text
 _campaign_categories
@@ -587,464 +423,22 @@ _campaign_comparison_metrics
 
 alanları kullanılmaktadır.
 
-Bu alanlar kampanyaların;
-
-* kategorisinin belirlenmesi,
-* avantaj tipinin anlaşılması,
-* tarih durumunun yorumlanması,
-* aktiflik süresinin belirlenmesi,
-* karşılaştırılabilir metriklerin oluşturulması
-
-amacıyla kullanılmaktadır.
+Bu alanlar kampanyaların kategori, avantaj tipi, kullanıcı kapsamı, tarih durumu ve karşılaştırılabilir özelliklerinin deterministik şekilde işlenmesine yardımcı olur.
 
 ---
 
-# Proje Klasör Yapısı
+# Bilgi Çıkarımı
+
+Harput Finans'ın **Bilgi Çıkarımı** modülü serbest finansal metin kabul eder.
+
+Örnek:
 
 ```text
-harput-finans/
-│
-├── app/
-│   │
-│   ├── discovery/
-│   │   └── adil_katilim_discovery.py
-│   │
-│   ├── dynamic_extractor/
-│   │   └── dynamic_regex_extractor.py
-│   │
-│   ├── processors/
-│   │   ├── *_extractor.py
-│   │   ├── merge_*.py
-│   │   ├── patch_*.py
-│   │   ├── validate_*.py
-│   │   ├── inspect_*.py
-│   │   └── cleanup_*.py
-│   │
-│   └── scrapers/
-│       ├── adil_katilim_finance_scraper.py
-│       ├── dunya_katilim_*.py
-│       ├── emlak_katilim_*.py
-│       ├── hayat_finans_*.py
-│       ├── kuveyt_turk_*.py
-│       └── turkiye_finans_*.py
-│
-├── data/
-│   ├── final_banks/
-│   └── test/
-│
-├── colab dosyaları/
-│   ├── uygulama dosyaları/
-│   └── veri çekme dosyalarının devamı/
-│
-├── requirements.txt
-├── LICENSE
-├── .gitignore
-└── README.md
+Yeni müşterilerimize özel %2,89 kâr payı oranıyla
+250.000 TL'ye kadar 24 ay vadeli finansman...
 ```
 
----
-
-# `app/discovery`
-
-Bu klasör doğrudan veri çekmeden önce banka web sitesindeki ilgili sayfaların **keşfedilmesi** için kullanılan kodları içerir.
-
-Şu anda:
-
-```text
-app/discovery/adil_katilim_discovery.py
-```
-
-bulunmaktadır.
-
-Bu script Adil Katılım'ın web sitesi içerisinde ürün, finansman ve kampanya olabilecek sayfaları taramak amacıyla geliştirilmiştir.
-
-Discovery mekanizması;
-
-* aynı domain içerisinde gezinme,
-* URL normalizasyonu,
-* finansman anahtar kelimelerinin kontrolü,
-* ürün/kampanya olabilecek sayfaların belirlenmesi,
-* gereksiz dosya uzantılarının filtrelenmesi,
-* maksimum tarama derinliğinin sınırlandırılması
-
-gibi işlemler gerçekleştirir.
-
-Discovery ile scraper birbirinden ayrılmıştır.
-
-```text
-Discovery
-    ↓
-İlgili sayfaları bulur
-
-Scraper
-    ↓
-Bulunan sayfalardan içeriği çıkarır
-```
-
----
-
-# `app/scrapers`
-
-Bu klasör, katılım bankalarının **resmî web sitelerinden veri toplamak** için oluşturulan banka bazlı scraperları içerir.
-
-Kullanılan temel yöntemler:
-
-* `requests`
-* `BeautifulSoup`
-* `Playwright`
-* URL discovery
-* HTML parsing
-* sayfa içeriği temizleme
-
-Bankanın web yapısına göre farklı scraping stratejileri kullanılmaktadır.
-
----
-
-## Adil Katılım
-
-```text
-app/scrapers/adil_katilim_finance_scraper.py
-```
-
-Adil Katılım'ın finansman ürün sayfasından bireysel finansman bilgisini toplar.
-
----
-
-## Dünya Katılım
-
-```text
-dunya_katilim_campaign_discovery.py
-dunya_katilim_campaign.py
-dunya_katilim_finansmanlar.py
-```
-
-Kampanya tarafında önce kampanya sayfalarının keşfi gerçekleştirilir.
-
-Daha sonra kampanya detay sayfaları işlenir.
-
-Finansman ürünleri ayrı scraper üzerinden toplanır.
-
----
-
-## Emlak Katılım
-
-```text
-emlak_katilim_campaign.py
-emlak_katilim_finansmanlar.py
-```
-
-Finansman ve kampanya verileri ayrı veri toplama akışlarından geçirilir.
-
----
-
-## Hayat Finans
-
-```text
-hayat_finans_campaign.py
-hayat_finans_finansmanlar.py
-```
-
-Hayat Finans'ın kampanya ve bireysel finansman sayfalarını işler.
-
-Scraperlarda beklenen kayıtların ve resmî URL'lerin kontrolüne yönelik ek kontroller bulunmaktadır.
-
----
-
-## Kuveyt Türk
-
-```text
-kuveyt_turk_campaign.py
-kuveyt_turk_finansmanlar.py
-```
-
-Kuveyt Türk'ün finansman ve kampanya kaynaklarını toplar.
-
-Kampanya tarafında dinamik içeriklerin yüklenmesi gerektiği durumlarda Playwright kullanılmaktadır.
-
-Bazı resmî kampanya sayfalarında alternatif resmî kaynaklar için fallback mekanizması da bulunmaktadır.
-
----
-
-## Türkiye Finans
-
-```text
-turkiye_finans_campaign.py
-turkiye_finans_finansmanlar.py
-```
-
-Türkiye Finans'ın finansman ürünleri ve kampanyalarını toplar.
-
-Kategori sayfaları, resmî ürün bağlantıları ve kampanya kaynakları ayrı ayrı işlenmektedir.
-
----
-
-# `app/processors`
-
-`processors` klasörü projenin en önemli veri hazırlama katmanlarından biridir.
-
-Scraperlardan gelen veri doğrudan AI Asistan'a verilmez.
-
-Önce processor katmanından geçirilir.
-
-Genel akış:
-
-```text
-RAW DATA
-   │
-   ▼
-EXTRACT
-   │
-   ▼
-NORMALIZE
-   │
-   ▼
-VALIDATE
-   │
-   ▼
-PATCH / CLEANUP
-   │
-   ▼
-MERGE
-   │
-   ▼
-FINAL BANK DATA
-```
-
-Processor klasöründeki dosyalar görevlerine göre birkaç gruba ayrılır.
-
----
-
-## Extractor Dosyaları
-
-Örneğin:
-
-```text
-adil_katilim_finance_extractor.py
-
-dunya_katilim_campaign_extractor.py
-dunya_katilim_finansman_extractor.py
-
-hayat_finans_campaign_extractor.py
-hayat_finans_finansman_extractor.py
-
-kuveyt_turk_campaign_extractor.py
-kuveyt_turk_finansman_extractor.py
-
-turkiye_finans_campaign_extractor.py
-turkiye_finans_finansman_extractor.py
-
-campaign_extractor.py
-product_extractor.py
-```
-
-Bu dosyalar ham metinler içerisinden yapılandırılmış finansal alanları çıkarır.
-
-Örneğin:
-
-```text
-kar_payi_orani
-finansman_tutari
-vade
-taksit_sayisi
-masraf_bilgisi
-kampanya_avantaji
-hedef_kitle
-kosullar
-```
-
----
-
-## Normalizer
-
-```text
-product_normalizer.py
-```
-
-Farklı formatlarda bulunan ürün bilgilerini daha standart bir yapıya dönüştürür.
-
-Normalizasyonun amacı banka kaynaklarını değiştirmek değil, karşılaştırılabilir hale getirmektir.
-
----
-
-## Validator Dosyaları
-
-Örneğin:
-
-```text
-validate_dunya_katilim_campaign_raw.py
-validate_dunya_katilim_finansman_raw.py
-
-validate_hayat_finans_campaign_raw.py
-validate_hayat_finans_finansman_raw.py
-
-validate_kuveyt_turk_campaign_raw.py
-validate_kuveyt_turk_raw.py
-
-validate_turkiye_finans_raw.py
-```
-
-Validatorların amacı veri toplama sonucunda;
-
-* beklenen kayıt sayısı,
-* banka adı,
-* kayıt tipi,
-* URL yapısı,
-* duplicate URL,
-* beklenen ürünler,
-* tarih tutarlılığı,
-* temel şema
-
-gibi kontrolleri gerçekleştirmektir.
-
-Bu sayede hatalı veya eksik scraping çıktısının doğrudan final veri setine ulaşması engellenir.
-
----
-
-## Inspect Dosyaları
-
-Örneğin:
-
-```text
-inspect_dunya_katilim_campaign_raw.py
-inspect_dunya_katilim_finansman_raw.py
-
-inspect_hayat_finans_campaign_raw.py
-inspect_hayat_finans_finansman_raw.py
-
-inspect_kuveyt_turk_campaign_raw.py
-inspect_kuveyt_turk_raw.py
-
-inspect_turkiye_finans_raw.py
-```
-
-Inspect scriptleri ham verilerin daha detaylı kalite kontrolü için kullanılmıştır.
-
-Özellikle;
-
-* beklenmeyen içerikler,
-* geçmiş kampanya tarihleri,
-* yanlış sayfadan gelen metinler,
-* ürün içeriğine başka ürünlerin karışması,
-* şüpheli değerler
-
-gibi sorunların tespit edilmesine yardımcı olur.
-
----
-
-## Patch / Cleanup Dosyaları
-
-Örneğin:
-
-```text
-patch_albaraka_turk_final.py
-patch_emlak_katilim_final.py
-patch_kuveyt_turk_final.py
-patch_tom_katilim_final.py
-patch_turkiye_finans_final.py
-patch_vakif_katilim_final_v9.py
-patch_ziraat_katilim_final.py
-
-cleanup_ziraat_katilim_final.py
-```
-
-Bu scriptler bankaya özgü son kalite düzeltmelerini gerçekleştirir.
-
-Bunlar özellikle;
-
-* yanlış formatlanmış yüzdeler,
-* para tutarları,
-* kampanya tarihleri,
-* vade değerleri,
-* tekrar eden bilgiler,
-* web arayüzünden gelen gereksiz metinler,
-* kampanya/finansman alanlarına yanlış taşınmış içerikler
-
-gibi sorunları final aşamada temizlemek amacıyla kullanılır.
-
----
-
-## Merge Dosyaları
-
-Örneğin:
-
-```text
-merge_adil_katilim.py
-merge_dunya_katilim.py
-merge_emlak_katilim.py
-merge_hayat_finans.py
-merge_kuveyt_turk.py
-merge_turkiye_finans.py
-```
-
-Finansman ve kampanya verileri ayrı süreçlerden geldikten sonra banka bazında bir araya getirilir.
-
-Örneğin:
-
-```text
-Dünya Katılım
-
-6 finansman
-+
-43 kampanya
-=
-49 kayıt
-```
-
-şeklinde final banka veri seti oluşturulur.
-
-Merge aşamasında tekrar;
-
-* şema,
-* duplicate URL,
-* duplicate başlık,
-* finansman/kampanya sayıları
-
-kontrol edilebilir.
-
----
-
-# `app/dynamic_extractor`
-
-Bu klasörde:
-
-```text
-dynamic_regex_extractor.py
-```
-
-bulunmaktadır.
-
-Bu bileşen klasik sabit regex yaklaşımından farklı bir bilgi çıkarımı mekanizması sunar.
-
-Amaç, daha önce görülmemiş bir finansman metni geldiğinde yapay zekâ modelinin o metni analiz ederek **regex tabanlı bir Python extractor üretmesini** sağlamaktır.
-
----
-
-## Çalışma Mantığı
-
-```text
-Yeni Finansman Metni
-        │
-        ▼
-Yerel Kod Üreten LLM
-        │
-        ▼
-Regex Tabanlı
-Python Extractor
-        │
-        ▼
-AST Güvenlik Kontrolü
-        │
-        ▼
-İzole Çalıştırma
-        │
-        ▼
-Semantik Validasyon
-        │
-        ▼
-Yapılandırılmış Sonuç
-```
-
-Dinamik extractor dokuz temel alan üretir:
+Sistem dokuz temel alan çıkarmaya çalışır:
 
 ```text
 kar_payi_orani
@@ -1058,254 +452,125 @@ para_birimi
 kosullar
 ```
 
-Bütün alanların liste biçiminde dönmesi beklenmektedir.
-
----
-
-## Hallucination Kontrolü
-
-Extractor için temel prensip:
-
-> Kaynakta bulunmayan bilgiyi üretme.
-
-Çıkarılan değerlerin mümkün olduğunca doğrudan kaynak metindeki regex eşleşmelerinden gelmesi beklenir.
-
-Örneğin kaynakta vade bulunmuyorsa:
-
-```markdown
-```json
-"vade": []
-```
-
-döndürülür.
-
----
-
-## Güvenli Kod Üretimi
-
-LLM tarafından üretilen Python kodu doğrudan çalıştırılmaz.
-
-Önce Python AST üzerinden güvenlik kontrolünden geçirilir.
-
-Sistem;
-
-* dosya açma,
-* `eval`,
-* `exec`,
-* `__import__`,
-* sistem komutları,
-* `os`,
-* `sys`,
-* `subprocess`,
-* ağ erişimi,
-* tehlikeli Python yapılarını
-
-üretilen extractor kodunda sınırlar.
-
-Yalnızca ihtiyaç duyulan regex ve temel Python işlemlerine izin verilir.
-
----
-
-## İzole Çalıştırma
-
-Güvenlik kontrolünden geçen kod ayrı bir çalışma sürecinde ve zaman sınırı ile çalıştırılır.
-
-Bu yaklaşım dinamik kod üretiminin uygulamanın ana sürecini kontrolsüz biçimde etkilemesini engellemeyi amaçlamaktadır.
-
----
-
-## Retry / Repair Mekanizması
-
-Üretilen extractor validator kontrollerinden geçmezse sistem modelden kodu düzeltmesini isteyebilir.
-
-Bu işlem belirli sayıda tekrar denenir.
-
-Böylece:
-
-```text
-Generate
-   ↓
-Validate
-   ↓
-Hata?
- ↙    ↘
-Evet   Hayır
- │       │
-Repair   Sonuç
- │
- └────► Validate
-```
-
-akışı oluşturulur.
-
----
-
-# `data/final_banks`
-
-Bu klasör Harput Finans'ın **kullanıma hazır final veri setlerini** içerir.
-
-```text
-data/final_banks/
-│
-├── adil_katilim_all.json
-├── albaraka_turk_all.json
-├── dunya_katilim_all.json
-├── emlak_katilim_all.json
-├── hayat_finans_all.json
-├── kuveyt_turk_all.json
-├── tom_katilim_all.json
-├── turkiye_finans_all.json
-├── vakif_katilim_all.json
-├── ziraat_katilim_all.json
-│
-└── katilim_finans_master.json
-```
-
----
-
-## Banka Bazlı Dosyalar
-
-`*_all.json` dosyaları ilgili bankanın final aşamasından geçmiş;
-
-* finansman,
-* kampanya
-
-kayıtlarını içerir.
-
----
-
-## Master Dataset
-
-```text
-katilim_finans_master.json
-```
-
-tüm banka verilerini tek bir kaynakta birleştirir.
-
-Temel yapı:
+Örnek çıktı:
 
 ```json
 {
-    "metadata": {},
-    "finansmanlar": [],
-    "kampanyalar": []
+  "kar_payi_orani": ["%2,89"],
+  "finansman_orani": [],
+  "finansman_tutari": ["250.000 TL'ye kadar"],
+  "vade": ["24 ay"],
+  "taksit_sayisi": [],
+  "masraf_bilgisi": [],
+  "hedef_kitle": ["Yeni müşteriler"],
+  "para_birimi": ["TL"],
+  "kosullar": []
 }
 ```
 
-### `metadata`
+---
 
-Dataset hakkında genel bilgileri içerir.
+# Dinamik Program-Sentezi Tabanlı Extraction
+
+Bilgi çıkarımı mekanizması doğrudan LLM'den yapılandırılmış finansal değer istemek yerine **program sentezi** yaklaşımı kullanır.
+
+Final extraction akışı:
+
+```text
+Ham Finansal Metin
+        │
+        ▼
+Qwen3-Coder-Next
+        │
+        ▼
+Python + Regex
+Extractor Kodu
+        │
+        ▼
+AST Güvenlik Kontrolü
+        │
+        ▼
+İzole Subprocess
+        │
+        ▼
+9 Alanlı Sabit JSON
+```
+
+Bu yaklaşım **single-pass** olarak çalışır.
+
+Final pipeline'da:
+
+```text
+Retry yok
+Repair yok
+Semantic critic yok
+```
+
+Kaynakta bulunmayan alanlar:
+
+```json
+[]
+```
+
+olarak döndürülür.
+
+---
+
+# AST Güvenlik Kontrolü
+
+LLM tarafından üretilen Python kodu doğrudan çalıştırılmaz.
+
+Kod önce Python AST üzerinden kontrol edilir.
+
+Tehlikeli veya gereksiz yapılara izin verilmez.
 
 Örneğin:
 
-* dataset adı,
-* schema version,
-* banka sayısı,
-* finansman sayısı,
-* kampanya sayısı,
-* toplam kayıt,
-* canonical kategori bilgileri.
-
-### `finansmanlar`
-
-Tüm bankaların normalize edilmiş finansman ürünlerini içerir.
-
-### `kampanyalar`
-
-Tüm bankaların normalize edilmiş kampanyalarını içerir.
-
-Web uygulamasının sorgu ve karşılaştırma katmanında temel veri kaynağı bu master yapıdır.
-
----
-
-# Colab Dosyaları
-
-Bazı bileşenler Google Colab üzerinde geliştirilmiştir.
-
-Bu nedenle ilgili notebooklar proje içerisinde ayrıca paylaşılmaktadır.
-
----
-
-# `colab dosyaları/uygulama dosyaları`
-
-Bu klasör Harput Finans'ın son kullanıcı uygulamasını içeren notebooku barındırır.
-
-Ana notebook:
-
 ```text
-Harput_Finanas.ipynb
+eval
+exec
+__import__
+os
+sys
+dosya sistemi erişimi
+ağ erişimi
+sistem komutları
 ```
 
-Bu notebook içerisinde sistemin;
+gibi işlemler sınırlandırılır.
 
-* veri yükleme,
-* finansman sorgulama,
-* kampanya sorgulama,
-* kullanıcı intent analizi,
-* multi-turn konuşma durumu,
-* finansman karşılaştırma,
-* kampanya karşılaştırma,
-* kişisel kriterlere göre ürün değerlendirme,
-* kaynak güvenliği,
-* AI cevap üretimi,
-* LangGraph iş akışı,
-* FastAPI backend,
-* bilgi çıkarımı API'si,
-* web arayüzü,
-* Uvicorn sunucusu,
-* Cloudflare üzerinden demo yayını
-
-gibi uygulama katmanları bulunmaktadır.
-
----
-
-# Veri Çekme Notebookları
-
-```text
-colab dosyaları/
-└── veri çekme dosyalarının devamı/
-```
-
-içerisinde Python scriptleri dışında Colab üzerinde geliştirilen scraping süreçleri bulunmaktadır.
-
-Mevcut notebooklar:
-
-```text
-albarakatürkgüncel.ipynb
-tom_katılım_güncel.ipynb
-vakıfkatılımscraping_....ipynb
-ziraatkatılım.ipynb
-```
-
-Bu notebooklar sırasıyla;
-
-* Albaraka Türk,
-* T.O.M. Katılım,
-* Vakıf Katılım,
-* Ziraat Katılım
-
-veri toplama ve veri hazırlama süreçlerinin ilgili bölümlerini içerir.
-
-Bankaların web altyapıları birbirinden farklı olduğu için veri toplama işlemlerinde tek bir scraper yapısı yerine bankaya uygun yöntemler tercih edilmiştir.
-
-Bu notebooklarda kullanılan yöntemler arasında projeye göre;
-
-* Requests,
-* BeautifulSoup,
-* Playwright,
-* Selenium,
-* URL discovery,
-* HTML parsing
-
-gibi yaklaşımlar bulunmaktadır.
+AST kontrolünü geçen extractor ayrı subprocess içerisinde ve çalışma süresi sınırlandırılarak çalıştırılır.
 
 ---
 
 # AI Asistan
 
-Harput Finans AI Asistan kullanıcının doğal dilde yazdığı soruyu doğrudan veri tabanı sorgusuna çevirmek yerine önce kullanıcının amacını analiz eder.
+Harput Finans AI Asistanı kullanıcının veri şemasını veya backend fonksiyonlarını bilmesini gerektirmez.
 
-Desteklenen temel intent yapıları arasında:
+Örnek sorgular:
+
+```text
+Konut finansmanlarını göster.
+```
+
+```text
+Kuveyt Türk konut finansmanlarını göster.
+```
+
+```text
+Kuveyt Türk ile Ziraat Katılım
+konut finansmanlarını karşılaştır.
+```
+
+```text
+Dünya Katılım Hepsiburada kampanyalarını göster.
+```
+
+```text
+peki vadeleri?
+```
+
+Desteklenen temel niyet sınıfları:
 
 ```text
 PRODUCT_INFO
@@ -1317,200 +582,459 @@ FOLLOW_UP
 GENERAL_CHAT
 ```
 
-bulunmaktadır.
-
 ---
 
-## PRODUCT_INFO
+# Structured Intent Parser
 
-Belirli finansman ürünlerini sorgulamak için kullanılır.
+Kullanıcı sorgusu AI Asistan içinde yapılandırılmış bir forma dönüştürülür.
 
-Örnek:
+Parser aşağıdaki temel alanları üretir:
 
 ```text
-Kuveyt Türk konut finansmanları neler?
+intent
+banks
+all_banks
+topic
+product_category
+requested_fields
+comparison_criteria
 ```
 
+Bu yapı deterministic backend'in hangi tool'u çağıracağını belirlemeye yardımcı olur.
+
+Modelin görevi finansal sonucu hesaplamak değil, kullanıcının talebini yapılandırmaktır.
+
 ---
 
-## PRODUCT_COMPARE
+# Deterministik Finansal Araçlar
 
-Finansman ürünlerini karşılaştırmak için kullanılır.
-
-Örnek:
+Harput Finans'ta finansal kayıtlar ve karşılaştırmalar aşağıdaki deterministik araçlar üzerinden işlenir:
 
 ```text
-Kuveyt Türk ve Albaraka Türk
-konut finansmanlarını karşılaştır.
+get_product_info
+get_product_fields
+compare_products
+recommend_products
+
+get_campaign_info
+get_campaign_fields
+compare_campaigns
 ```
 
+Finansal oran, tutar, vade, taksit ve benzeri yapılandırılmış değerler doğrudan LLM tarafından karşılaştırılmaz.
+
+Karşılaştırma işlemleri Python tarafında gerçekleştirilir.
+
 ---
 
-## PERSONAL_RECOMMENDATION
+# LangGraph
 
-Kullanıcının finansman ihtiyacına göre uygun seçenekleri değerlendirmek için kullanılır.
+AI Asistan'ın yönlendirme ve conversation state akışı **LangGraph** ile yönetilmektedir.
 
-Örnek:
+Temel graph akışı:
 
 ```text
-500.000 TL araç finansmanı istiyorum.
-24 ay vade düşünüyorum.
+START
+  │
+  ▼
+Intent Parsing
+  │
+  ├────────────► General Chat
+  │
+  └────────────► Deterministic Backend
+                         │
+                         ▼
+                 Grounded Response
+                         │
+                         ▼
+                        END
 ```
 
+Conversation context gerektiğinde `FOLLOW_UP` intent'i kullanılır.
+
 ---
 
-## CAMPAIGN_INFO
+# Çok Turlu Konuşma
 
-Kampanya sorguları için kullanılır.
+AI Asistan konuşma durumunu session bazlı olarak koruyabilir.
 
 Örnek:
 
 ```text
-Aktif alışveriş kampanyaları neler?
-```
-
----
-
-## CAMPAIGN_COMPARE
-
-Farklı kampanyaların belirli metrikler üzerinden karşılaştırılmasını sağlar.
-
----
-
-## FOLLOW_UP
-
-Önceki mesajın devamı niteliğindeki sorgular için kullanılır.
-
-Örnek:
-
-```text
+Kullanıcı:
 Konut finansmanlarını göster.
+
+Asistan:
+Hangi bankayı görmek istersiniz?
+
+Kullanıcı:
+Kuveyt Türk
+
+Kullanıcı:
+Peki vadeleri?
 ```
 
-ardından:
+Son mesajda kullanıcının tekrar:
 
 ```text
-Sadece Kuveyt Türk olanları göster.
+Kuveyt Türk konut finansmanlarının vadeleri
 ```
+
+yazması gerekmez.
+
+Önceki konuşma scope'u session state üzerinden korunur.
+
+Session'lar birbirinden izole tutulur.
 
 ---
 
-# Grounded Response Yaklaşımı
+# Kaynak ve Finansal Değer Güvenliği
 
-AI modeli doğrudan kendi bilgisine dayanarak finansal cevap oluşturmak yerine sistem tarafından elde edilen **deterministic tool result** üzerinden cevap üretmek üzere tasarlanmıştır.
+Harput Finans'ın cevap üretim katmanı **grounded response** yaklaşımını kullanır.
 
-Amaç;
+Akış:
 
 ```text
 Kullanıcı Sorusu
-       │
-       ▼
-Intent
-       │
-       ▼
-Deterministik Veri İşleme
-       │
-       ▼
-TOOL_RESULT
-       │
-       ▼
-LLM
-       │
-       ▼
+        │
+        ▼
+Deterministik Tool
+        │
+        ▼
+Tool Result / Evidence
+        │
+        ▼
+Qwen3.5
+        │
+        ▼
 Doğal Dil Yanıtı
 ```
 
-akışını kullanmaktır.
+Finansal sayıların mümkün olduğunca tool evidence dışından oluşturulmaması hedeflenir.
 
-Bu yöntem finansal rakamların yapay zekâ tarafından uydurulma riskini azaltmayı amaçlamaktadır.
-
----
-
-# Kaynak Güvenliği
-
-Sistem cevap üretiminde kaynak URL'lerini ayrı olarak işlemektedir.
-
-Kaynak URL'lerinin model tarafından yeniden oluşturulması yerine gerçek dataset kaynaklarının korunması amaçlanmıştır.
-
-Bu sayede sistem tarafından hayalî kaynak URL oluşturma riskinin azaltılması hedeflenmiştir.
+Kaynak URL'leri LLM tarafından üretilmez.
 
 ---
 
-# Bilgi Çıkarımı
+# No-data Davranışı
 
-Web arayüzündeki **Bilgi Çıkarımı** modülü serbest metin kabul eder.
+Sistem veri bulunmayan durumlarda kayıt üretmeye çalışmaz.
 
-Kullanıcı örneğin:
-
-```text
-Yeni müşterilerimize özel %2,89 kâr payı oranıyla
-250.000 TL'ye kadar 24 ay vadeli finansman...
-```
-
-metnini sisteme verebilir.
-
-Sistem yapılandırılmış olarak şu dokuz alan üzerinde bilgi çıkarmaya çalışır:
+Örneğin:
 
 ```text
-kar_payi_orani
-finansman_orani
-finansman_tutari
-vade
-taksit_sayisi
-masraf_bilgisi
-hedef_kitle
-para_birimi
-kosullar
+XyzaqMarket kampanyalarını göster.
 ```
 
-Sonuç web arayüzünde kullanıcıya gösterilir.
+sorgusunda master veri setinde eşleşen kayıt bulunmuyorsa sistem:
+
+```text
+NOT_FOUND
+```
+
+durumunu döndürür.
+
+Belirli bir bankada ürün bulunmayıp başka bankalarda bulunuyorsa:
+
+```text
+BANK_NOT_AVAILABLE
+```
+
+durumu kullanılabilir.
+
+Bu ayrım kullanıcıya “ürün hiç yok” ile “bu bankada yok” durumlarının farklı şekilde sunulmasını sağlar.
+
+---
+
+# Değerlendirme
+
+Harput Finans farklı sistem katmanlarında ayrı benchmarklarla değerlendirilmiştir.
+
+## 1. Bilgi Çıkarımı Benchmarkı
+
+50 kayıt kullanılmıştır:
+
+```text
+30 finansman
+20 kampanya
+10 banka
+```
+
+Her kayıt üç bağımsız run üzerinden değerlendirilmiştir.
+
+Toplam:
+
+```text
+50 × 3 × 9 = 1.350 alan ölçümü
+```
+
+### Harput sonuçları
+
+| Metrik | Sonuç |
+|---|---:|
+| Teknik Başarı | **%78.00 — 117/150** |
+| Strict Accuracy — Tüm Alanlar | **%47.85** |
+| Weighted Accuracy — Tüm Alanlar | **%54.00** |
+| Strict Accuracy — Başarılı Kayıtlar | **%61.35** |
+| Weighted Accuracy — Başarılı Kayıtlar | **%69.23** |
+| Alan-değer Ortalama Pairwise Jaccard | **%65.33** |
+| Presence Consistency | **%79.11** |
+| 9 Alanın Üç Run'da Tamamen Aynı Olması | **%4.00** |
+
+> Jaccard ve presence değerleri doğruluk değil, **tutarlılık** ölçümüdür.
+
+---
+
+## Direct-JSON Baseline Karşılaştırması
+
+| Metrik | Harput | Qwen3.5 9B Direct JSON | Llama3.1 8B Direct JSON |
+|---|---:|---:|---:|
+| Teknik Başarı | **78.00** | 100.00 | 98.00 |
+| Strict — Tüm Alanlar | **47.85** | 73.19 | 60.30 |
+| Weighted — Tüm Alanlar | **54.00** | 81.78 | 68.93 |
+| Strict — Başarılı Kayıtlar | **61.35** | 73.19 | 61.53 |
+| Weighted — Başarılı Kayıtlar | **69.23** | 81.78 | 70.33 |
+
+> **Önemli:** Baseline karşılaştırmasında yalnızca yöntem değil, kullanılan modeller de değişmektedir.  
+> Bu nedenle performans farkı yalnızca extraction mimarisine atfedilemez.
+
+---
+
+## 2. Niyet Sınıflandırma
+
+50 soruluk frozen test seti:
+
+```text
+47 doğru
+3 yanlış
+0 teknik hata
+```
+
+Sonuç:
+
+```text
+Intent Classification Accuracy = %94.00
+```
+
+---
+
+## 3. Yapılandırılmış Alan / Filtre Çıkarımı
+
+30 soruluk değerlendirme setinde:
+
+```text
+172 slot
+128 doğru
+```
+
+Sonuç:
+
+```text
+Raw Slot Extraction Accuracy = %74.42
+```
+
+Tüm değerlendirilen filtre alanlarının aynı anda birebir doğru olmasını gerektiren daha katı metrik:
+
+```text
+Strict Exact Filter Match
+10 / 30
+%33.33
+```
+
+Bu metrik canonical isimlendirme farklılıklarına karşı da hassastır.
+
+---
+
+## 4. Sayısal Finansal Grounding
+
+30 cevap üzerinde grounding değerlendirmesi yapılmıştır.
+
+Sayısal finansal değer içeren 14 cevapta toplam:
+
+```text
+92 finansal sayı
+```
+
+tespit edilmiştir.
+
+Bu değerlerin:
+
+```text
+92 / 92
+```
+
+adedi ilgili tool evidence tarafından desteklenmiştir.
+
+```text
+Numeric Financial Grounding = %100
+```
+
+> Bu değer yalnızca tespit edilen sayısal finansal ifadelerin grounding başarısını gösterir.  
+> Bütün agent'ın genel doğruluğu anlamına gelmez.
+
+---
+
+## 5. Deterministik Retrieval
+
+24 frozen sorgu üzerinde deterministic backend değerlendirilmiştir.
+
+Final V3 sonucu:
+
+```text
+TP = 130
+FP = 0
+FN = 0
+```
+
+| Metrik | Sonuç |
+|---|---:|
+| Micro Precision | **%100** |
+| Micro Recall | **%100** |
+| Micro F1 | **%100** |
+| Exact Retrieved Set Match | **24/24** |
+| Retrieved-record Source Integrity | **130/130** |
+
+Retrieval V1 evaluator implementasyon hataları nedeniyle geçersiz sayılmıştır.
+
+Final V3, kaydedilmiş V2 prediction'larının düzeltilmiş evaluator semantiğiyle offline yeniden skorlanmasıdır.
+
+---
+
+## 6. Çok Turlu Konuşma
+
+10 frozen senaryo üzerinde toplam 77 context kontrolü gerçekleştirilmiştir.
+
+### Pre-fix
+
+```text
+Context Checks:
+66 / 77 = %85.71
+
+Scenario Exact:
+8 / 10 = %80.00
+```
+
+Benchmark sırasında iki bank-switch context problemi tespit edilmiştir.
+
+Production'a contextual bank follow-up guard eklenmiştir.
+
+### Post-fix
+
+Aynı frozen test seti yeniden kullanılmıştır.
+
+```text
+Context Checks:
+77 / 77 = %100
+
+Scenario Exact:
+10 / 10 = %100
+```
+
+| Metrik | Pre-fix | Post-fix |
+|---|---:|---:|
+| Context Check Accuracy | 85.71% | **100.00%** |
+| Scenario Exact Success | 80.00% | **100.00%** |
+
+---
+
+## 7. No-data Safety
+
+12 frozen no-data vakasında toplam 108 safety check gerçekleştirilmiştir.
+
+### Pre-fix
+
+```text
+107 / 108 = %99.07
+11 / 12 exact case = %91.67
+```
+
+Bir `all-banks + zero-record` status contract problemi tespit edilmiştir.
+
+### Post-fix
+
+Aynı frozen set tekrar kullanılmıştır.
+
+```text
+108 / 108 = %100
+12 / 12 = %100 exact case
+```
+
+Final post-fix değerlendirmesinde:
+
+```text
+Requested-target record leak = 0
+Invalid source URL = 0
+Unsupported numeric claim = 0
+Answer URL leak = 0
+```
+
+| Metrik | Pre-fix | Post-fix |
+|---|---:|---:|
+| Safety Check Accuracy | 99.07% | **100.00%** |
+| Case Exact Success | 91.67% | **100.00%** |
+
+---
+
+# Değerlendirme Metodolojisi Hakkında Notlar
+
+Değerlendirme sonuçlarının doğru yorumlanması için aşağıdaki sınırlamalar dikkate alınmalıdır.
+
+Intent, structured filter ve grounding test setleri **assistant-authored frozen evaluation setleri**dir.
+
+Bunlar bağımsız insan anotasyonlu akademik benchmarklar olarak sunulmamaktadır.
+
+Retrieval değerlendirmesinde ground truth master veri setinden deterministik olarak oluşturulmuştur.
+
+Retrieval V3 sonucu, önceden kaydedilmiş prediction'lar üzerinde yapılan evaluator semantics correction sonrasında elde edilen offline rescore sonucudur.
+
+Multi-turn ve no-data post-fix sonuçları, pre-fix değerlendirmelerinde kullanılan **aynı frozen test setleri** üzerinde gerçekleştirilmiştir.
+
+Bu nedenle Harput Finans için tek bir:
+
+```text
+Overall Accuracy
+```
+
+değeri raporlanmamaktadır.
 
 ---
 
 # Web Arayüzü
 
-Harput Finans tek web uygulaması içerisinde üç temel fonksiyon sunar.
+Harput Finans tek web uygulamasında üç temel modül sunar.
 
 ## AI Asistan
 
-* Doğal dilde soru sorma
-* Finansman ürünlerini bulma
-* Kampanyaları inceleme
-* Banka filtreleme
-* Takip soruları
-* Ürün karşılaştırma
-* Kampanya karşılaştırma
-* Kriter bazlı değerlendirme
-* Kaynak görüntüleme
-
----
+- Doğal dilde finansal soru sorma
+- Finansman ürünü bulma
+- Kampanya bulma
+- Banka filtreleme
+- Finansman karşılaştırma
+- Kampanya karşılaştırma
+- Follow-up sorguları
+- Kaynak görüntüleme
 
 ## Bilgi Çıkarımı
 
-* Serbest metin girişi
-* Finansal bilgi çıkarımı
-* Yapılandırılmış sonuç
-* JSON görünümü
-* Kullanıcı dostu sonuç gösterimi
-
----
+- Serbest finansal metin girişi
+- Dinamik extractor üretimi
+- 9 alanlı yapılandırılmış sonuç
+- JSON görünümü
 
 ## Sistem & Veri
 
-* Toplam banka sayısı
-* Toplam kayıt
-* Finansman sayısı
-* Kampanya sayısı
-* Banka bazlı veri dağılımı
-* Dataset ve sistem durumunun görüntülenmesi
-
-gibi bilgilerin takip edilmesini sağlar.
+- Toplam banka
+- Toplam kayıt
+- Finansman sayısı
+- Kampanya sayısı
+- Veri dağılımı
+- Sistem durumu
 
 ---
 
-# API Yapısı
+# API
 
-Web uygulaması **FastAPI** üzerinde çalışmaktadır.
+Backend **FastAPI** üzerinde çalışmaktadır.
 
 Ana endpointler:
 
@@ -1522,154 +1046,78 @@ POST /extract
 GET  /
 ```
 
----
-
 ## `GET /health`
 
-Sistemin çalışıp çalışmadığını kontrol eder.
-
----
+Servisin çalışma durumunu kontrol eder.
 
 ## `POST /chat`
 
-AI Asistan sorgularını işler.
+AI Asistan sorgusunu işler.
 
-Örnek istek:
+Örnek:
 
 ```json
 {
-    "message": "Konut finansmanı seçeneklerini göster.",
-    "session_id": "optional"
+  "message": "Kuveyt Türk konut finansmanlarını göster.",
+  "session_id": "optional"
 }
 ```
 
-Session ID verilmediğinde sistem yeni bir oturum oluşturabilir.
-
----
-
 ## `POST /chat/reset`
 
-Kullanıcının mevcut konuşma durumunu sıfırlamak için kullanılır.
-
----
+Belirtilen session'ın konuşma durumunu sıfırlar.
 
 ## `POST /extract`
 
-Bilgi çıkarımı modülünün backend endpointidir.
-
-Kullanıcı tarafından verilen finansal metni bilgi çıkarım pipeline'ına gönderir.
-
----
+Serbest finansal metni bilgi çıkarımı pipeline'ına gönderir.
 
 ## `GET /`
 
-Harput Finans web arayüzünü sunar.
+Web arayüzünü sunar.
 
 ---
 
-# LangGraph
+# Kullanılan Modeller
 
-AI Asistan'ın konuşma ve yönlendirme süreçlerinin yönetiminde **LangGraph** kullanılmaktadır.
+Harput Finans'ta agent ve extraction görevleri birbirinden ayrılmıştır.
 
-LangGraph akışı;
-
-* intent analizi,
-* ürün bilgi sorgusu,
-* ürün karşılaştırma,
-* kampanya sorgusu,
-* kampanya karşılaştırma,
-* kişisel öneri,
-* follow-up işlemleri
-
-gibi farklı kullanıcı taleplerinin uygun işlem hattına yönlendirilmesine yardımcı olur.
-
----
-
-# Session Yönetimi
-
-Chatbot birden fazla kullanıcı mesajından oluşan konuşmaları desteklemek üzere session mantığı kullanmaktadır.
-
-Her kullanıcı oturumu ayrı konuşma durumu ile takip edilir.
-
-Bu sayede:
-
-```text
-1. Konut finansmanı seçeneklerini göster.
-2. Kuveyt Türk olsun.
-3. Bunlardan hangisinin vadesi daha uzun?
-```
-
-gibi ardışık konuşmalar gerçekleştirilebilir.
-
----
-
-# Kullanılan Yapay Zeka Modelleri
-
-Uygulamanın mevcut notebook yapısında iki farklı yapay zekâ görevi ayrılmıştır.
-
-## AI Asistan Modeli
+## AI Asistan
 
 ```text
 qwen3.5:35b-a3b-q8_0
 ```
 
-Kullanıcının intent'inin yorumlanması ve yapılandırılmış sonuçların doğal dil yanıtına dönüştürülmesi gibi agent görevlerinde kullanılmaktadır.
+Görevleri:
 
----
+```text
+Niyet analizi
+Structured parsing
+Doğal dil cevap üretimi
+```
 
-## Bilgi Çıkarımı Modeli
+Finansal retrieval ve karşılaştırma işlemleri model yerine deterministik backend tarafından gerçekleştirilir.
+
+## Bilgi Çıkarımı
 
 ```text
 qwen3-coder-next
 ```
 
-Dinamik bilgi çıkarımı için regex tabanlı Python extractor üretiminde kullanılmaktadır.
-
-Bu iki görev ayrı modeller üzerinden yürütülerek;
+Görevi:
 
 ```text
-Agent / Reasoning
+Kaynak finansal metinden
+alan çıkarımı gerçekleştirecek
+Python + regex extractor kodu üretmek
 ```
-
-ve;
-
-```text
-Extraction / Code Generation
-```
-
-sorumlulukları ayrılmıştır.
-
----
-
-# Model Yaşam Döngüsü
-
-Uygulamada büyük modellerin aynı anda gereksiz yere bellekte tutulmasını engellemek için model yaşam döngüsü kontrolleri bulunmaktadır.
-
-Bilgi çıkarımı sırasında extractor modeli;
-
-```text
-qwen3-coder-next
-```
-
-kullanılır.
-
-Chatbot işlemlerinde ise agent modeli;
-
-```text
-qwen3.5:35b-a3b-q8_0
-```
-
-kullanılır.
-
-Sistem model yükleme/boşaltma işlemleriyle kaynak kullanımını kontrol etmeyi hedeflemektedir.
 
 ---
 
 # On-Premise Yaklaşımı
 
-Harput Finans mimarisi yerel model çalıştırmayı desteklemektedir.
+Harput Finans yerel model çalıştırmayı desteklemektedir.
 
-LLM çalıştırma katmanında:
+LLM çalışma katmanında:
 
 ```text
 Ollama
@@ -1677,25 +1125,21 @@ Ollama
 
 kullanılmaktadır.
 
-Varsayılan yerel adres:
+Varsayılan servis adresi:
 
 ```text
 http://127.0.0.1:11434
 ```
 
-şeklindedir.
+Bu sayede uygun donanıma sahip kurumlarda sistem temel AI işlemlerini haricî bir LLM API'sine ihtiyaç duymadan çalıştırabilir.
 
-Bu yaklaşım sistemin uygun donanım bulunduğunda kurum içerisinde çalıştırılabilmesine imkân sağlar.
-
-Cloudflare kullanımı uygulamanın yarışma/demo ortamında web arayüzünü dışarı açabilmek için kullanılan sunum katmanıdır; temel AI çalışma mantığının Ollama üzerinden yerel çalışması mümkündür.
+Cloudflare Tunnel yalnızca yarışma/demo ortamında web uygulamasının dış erişime açılması için kullanılabilir.
 
 ---
 
 # Teknolojiler
 
-Projede kullanılan başlıca teknolojiler:
-
-### Programlama
+## Programlama
 
 ```text
 Python
@@ -1704,7 +1148,7 @@ CSS
 JavaScript
 ```
 
-### Web Scraping
+## Web Scraping
 
 ```text
 Requests
@@ -1713,7 +1157,7 @@ Playwright
 Selenium
 ```
 
-### Backend
+## Backend
 
 ```text
 FastAPI
@@ -1721,21 +1165,22 @@ Uvicorn
 Pydantic
 ```
 
-### AI / Agent
+## AI / Agent
 
 ```text
 Ollama
-Qwen
+Qwen3.5
+Qwen3-Coder-Next
 LangGraph
 ```
 
-### Veri
+## Veri
 
 ```text
 JSON
 ```
 
-### Geliştirme Ortamı
+## Geliştirme
 
 ```text
 Google Colab
@@ -1743,10 +1188,140 @@ Jupyter Notebook
 Python Virtual Environment
 ```
 
-### Demo / Yayın
+## Demo
 
 ```text
 Cloudflare Tunnel
+```
+
+---
+
+# Proje Yapısı
+
+```text
+harput-finans/
+│
+├── app/
+│   ├── discovery/
+│   ├── dynamic_extractor/
+│   ├── processors/
+│   └── scrapers/
+│
+├── data/
+│   ├── final_banks/
+│   │   └── katilim_finans_master.json
+│   └── test/
+│
+├── colab dosyaları/
+│   ├── uygulama dosyaları/
+│   │   └── Harput_Finans.ipynb
+│   └── veri çekme dosyalarının devamı/
+│
+├── evaluation/
+│   ├── figures/
+│   └── results/
+│
+├── docs/
+│
+├── requirements.txt
+├── LICENSE
+├── .gitignore
+└── README.md
+```
+
+> Ana uygulama notebooku repoda da `Harput_Finans.ipynb` olarak yeniden adlandırılmalıdır.
+
+---
+
+# Veri Toplama Katmanı
+
+`app/scrapers` klasörü katılım bankalarının resmî web sitelerinden finansman ve kampanya verilerinin toplanması için kullanılan banka bazlı scraperları içerir.
+
+Web altyapıları farklı olduğu için bankaya göre:
+
+```text
+Requests
+BeautifulSoup
+Playwright
+Selenium
+URL Discovery
+HTML Parsing
+```
+
+gibi farklı yöntemler kullanılmıştır.
+
+---
+
+# Veri Hazırlama Katmanı
+
+`app/processors` scraper çıktılarının final veri setine dönüşmeden önce işlendiği katmandır.
+
+Genel akış:
+
+```text
+RAW
+ │
+ ▼
+EXTRACT
+ │
+ ▼
+NORMALIZE
+ │
+ ▼
+VALIDATE
+ │
+ ▼
+PATCH / CLEANUP
+ │
+ ▼
+MERGE
+ │
+ ▼
+FINAL BANK DATA
+```
+
+Processor scriptleri:
+
+```text
+extraction
+normalization
+validation
+inspection
+cleanup
+bank-specific patch
+merge
+```
+
+işlemlerini gerçekleştirir.
+
+---
+
+# Final Dataset
+
+Banka bazlı final dosyaları:
+
+```text
+data/final_banks/
+```
+
+altında bulunmaktadır.
+
+Ana master dataset:
+
+```text
+data/final_banks/katilim_finans_master.json
+```
+
+Raw GitHub bağlantısı:
+
+```text
+https://raw.githubusercontent.com/HarputAI-Teknofest2026/harput-finans/main/data/final_banks/katilim_finans_master.json
+```
+
+Banka bazlı final dataset klasörü:
+
+```text
+https://github.com/HarputAI-Teknofest2026/harput-finans/tree/main/data/final_banks
 ```
 
 ---
@@ -1756,7 +1331,7 @@ Cloudflare Tunnel
 Repository'yi klonlayın:
 
 ```bash
-git clone https://github.com/HarpuAI-Teknofest2026/harput-finans.git
+git clone https://github.com/HarputAI-Teknofest2026/harput-finans.git
 ```
 
 Proje dizinine geçin:
@@ -1765,7 +1340,7 @@ Proje dizinine geçin:
 cd harput-finans
 ```
 
-Sanal ortam oluşturulması önerilir:
+Sanal ortam oluşturun:
 
 ```bash
 python -m venv .venv
@@ -1777,13 +1352,19 @@ macOS / Linux:
 source .venv/bin/activate
 ```
 
-Python bağımlılıklarını yükleyin:
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Bağımlılıkları yükleyin:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Playwright tabanlı scraperlar için gerekli browser bileşenlerini kurun:
+Playwright kullanılan scraperlar için:
 
 ```bash
 playwright install
@@ -1793,33 +1374,37 @@ playwright install
 
 # Uygulamayı Çalıştırma
 
-Harput Finans'ın ana uygulaması Google Colab / Jupyter Notebook ortamında çalışacak şekilde hazırlanmıştır.
+Harput Finans'ın ana uygulaması Google Colab / Jupyter Notebook tabanlı olarak geliştirilmiştir.
 
-
-Ana uygulama notebooku:
+Ana notebook:
 
 ```text
-colab dosyaları/uygulama dosyaları/Harput_Finanas.ipynb
+colab dosyaları/uygulama dosyaları/Harput_Finans.ipynb
 ```
 
-Bu notebook içerisinde;
+Notebook içerisinde:
 
-- Master veri setinin yüklenmesi
-- Yapay zeka modellerinin hazırlanması
-- AI Asistan'ın başlatılması
-- Bilgi Çıkarımı bileşeninin çalıştırılması
-- FastAPI backend'in oluşturulması
-- Web arayüzünün başlatılması
+```text
+Master dataset yükleme
+Ollama kontrolü
+Agent modeli
+Extraction modeli
+Deterministik finansman araçları
+Deterministik kampanya araçları
+LangGraph
+Session yönetimi
+FastAPI
+Web arayüzü
+Cloudflare demo
+```
 
-işlemleri gerçekleştirilmektedir.
+bileşenleri bulunmaktadır.
 
 ---
 
-## 1. Ollama'nın Hazırlanması
+# Ollama
 
-Harput Finans'ın yapay zeka bileşenleri Ollama üzerinden yerel olarak çalıştırılmaktadır.
-
-Ollama servisinin çalışıp çalışmadığını kontrol etmek için:
+Ollama servisinin çalıştığını doğrulamak için:
 
 ```bash
 ollama list
@@ -1831,128 +1416,102 @@ Servis aktif değilse:
 ollama serve
 ```
 
-komutu ile başlatılabilir.
-
-Uygulamada kullanılan varsayılan Ollama adresi:
+Varsayılan servis:
 
 ```text
 http://127.0.0.1:11434
 ```
 
-şeklindedir.
-
-
----
-
-
-# Final Dataset
-
-Sadece son kullanım için hazırlanmış banka verileri:
+Agent modeli:
 
 ```text
-data/final_banks/
+qwen3.5:35b-a3b-q8_0
 ```
 
-dizininde yer almaktadır.
-
-Sistemin tüm bankaları birlikte kullandığı ana veri dosyası:
+Bilgi çıkarımı modeli:
 
 ```text
-data/final_banks/katilim_finans_master.json
+qwen3-coder-next
 ```
-
-dosyasıdır.
 
 ---
 
-## Veri Setini İndir
+# Veri Güvenliği
 
-Harput Finans kapsamında oluşturulan 10 katılım bankasına ait birleşik final veri seti herkese açık olarak aşağıdaki bağlantıdan indirilebilir:
+Harput Finans geliştirilirken aşağıdaki prensipler uygulanmıştır.
 
-**Master Veri Seti:**  
-https://raw.githubusercontent.com/HarpuAI-Teknofest2026/harput-finans/main/data/final_banks/katilim_finans_master.json
+## Resmî kaynak kullanımı
 
-Banka bazlı final veri dosyalarının tamamı:
+Veriler katılım bankalarının halka açık resmî web kaynaklarından toplanmıştır.
 
-https://github.com/HarpuAI-Teknofest2026/harput-finans/tree/main/data/final_banks
+## Kaynak URL koruması
 
-Veri seti toplam **530 kayıt** içermektedir:
+Her kayıtta mümkün olduğunca orijinal banka URL'si korunmuştur.
 
-- 116 finansman ürünü
-- 414 kampanya
-- 10 katılım bankası
+## Kaynak dışı finansal değer üretimini sınırlandırma
 
-# Test Verileri
+Kaynak metinde bulunmayan finansal alanların tahmin edilmesi yerine boş bırakılması hedeflenmiştir.
+
+## Yapılandırılmış veri katmanı
+
+LLM cevabı tek bilgi kaynağı olarak kullanılmaz.
+
+Finansal retrieval ve karşılaştırma yapılandırılmış master dataset ve deterministik araçlar üzerinden gerçekleştirilir.
+
+## Validasyon
+
+Scraping ve veri işleme aşamalarında:
 
 ```text
-data/test/
+schema
+duplicate URL
+duplicate record
+record count
+bank identity
+source URL
+financial field format
 ```
 
-dizini geliştirme sırasında bilgi çıkarımı gibi bileşenlerin kontrol edilmesinde kullanılan test girdilerini barındırır.
+kontrolleri uygulanmıştır.
 
 ---
 
-# Veri Güvenliği ve Doğruluk Yaklaşımı
-
-Harput Finans geliştirilirken özellikle şu prensiplere dikkat edilmiştir:
-
-### 1. Resmî Kaynak
-
-Veriler katılım bankalarının resmî web kaynaklarından toplanır.
-
-### 2. Kaynak URL Koruma
-
-Her kayıt mümkün olduğunca kaynak URL ile birlikte tutulur.
-
-### 3. Hallucination Önleme
-
-Kaynakta bulunmayan finansal değerlerin üretilmemesi hedeflenir.
-
-### 4. Yapılandırılmış Veri
-
-LLM çıktısı doğrudan tek güven kaynağı olarak kullanılmak yerine yapılandırılmış ve doğrulanmış veri katmanı kullanılır.
-
-### 5. Validasyon
-
-Scraping ve extraction sonrasında banka özelinde doğrulama scriptleri kullanılır.
-
-### 6. Duplicate Kontrolü
-
-Aynı URL veya ürünün tekrar final veri setine eklenmesini engellemeye yönelik kontroller uygulanır.
-
----
-
-# Projenin Temel Farkı
+# Harput Finans'ın Temel Farkı
 
 Harput Finans yalnızca bir chatbot değildir.
 
-Sistem uçtan uca:
+Sistem:
 
 ```text
+RESMÎ WEB KAYNAKLARI
+        +
 VERİ TOPLAMA
-    +
+        +
 VERİ TEMİZLEME
-    +
-NLP BİLGİ ÇIKARIMI
-    +
-VERİ NORMALİZASYONU
-    +
-VALIDASYON
-    +
+        +
+NORMALİZASYON
+        +
+PROGRAM-SENTEZİ TABANLI
+BİLGİ ÇIKARIMI
+        +
 CANONICAL SINIFLANDIRMA
-    +
-AI AGENT
-    +
-MULTI-TURN CHAT
-    +
-ÜRÜN KARŞILAŞTIRMA
-    +
-KAMPANYA KARŞILAŞTIRMA
-    +
+        +
+DETERMİNİSTİK RETRIEVAL
+        +
+DETERMİNİSTİK KARŞILAŞTIRMA
+        +
+LANGGRAPH AGENT
+        +
+ÇOK TURLU KONUŞMA
+        +
+KAYNAK-TEMELLİ YANIT
+        +
+FASTAPI
+        +
 WEB ARAYÜZÜ
 ```
 
-bileşenlerinden oluşmaktadır.
+bileşenlerinden oluşan uçtan uca bir finansal dil ajanıdır.
 
 ---
 
@@ -1960,7 +1519,7 @@ bileşenlerinden oluşmaktadır.
 
 Bu proje **Apache License 2.0** kapsamında lisanslanmıştır.
 
-Detaylı lisans metni repository içerisindeki:
+Detaylar:
 
 ```text
 LICENSE
@@ -1970,9 +1529,11 @@ dosyasında bulunmaktadır.
 
 ---
 
-## Harput Finans
+# Harput Finans
 
-**Katılım finansını daha anlaşılır hale getiriyoruz.**
+> **Katılım finansını daha erişilebilir, karşılaştırılabilir ve kaynak-temelli hâle getiriyoruz.**
+
+---
 
 ## Yarışma Etiketleri
 
