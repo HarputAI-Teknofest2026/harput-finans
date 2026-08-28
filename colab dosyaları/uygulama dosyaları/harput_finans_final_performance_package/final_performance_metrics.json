@@ -1,0 +1,57 @@
+{
+  "extraction": {
+    "technical_success": 78.0,
+    "strict_all": 47.85,
+    "weighted_all": 54.0,
+    "strict_successful_only": 61.35,
+    "weighted_successful_only": 69.23,
+    "field_value_consistency_jaccard": 65.33,
+    "presence_consistency": 79.11,
+    "all_nine_identical": 4.0
+  },
+  "intent_parser": {
+    "intent_accuracy": 94.0,
+    "raw_slot_accuracy": 74.42,
+    "strict_exact_filter_match": 33.33
+  },
+  "grounding": {
+    "numeric_financial_grounding": 100.0,
+    "supported_values": 92,
+    "total_values": 92
+  },
+  "retrieval": {
+    "micro_precision": 100.0,
+    "micro_recall": 100.0,
+    "micro_f1": 100.0,
+    "exact_set_match": 100.0,
+    "tp": 130,
+    "fp": 0,
+    "fn": 0,
+    "source_integrity": 100.0,
+    "source_records": 130
+  },
+  "multiturn": {
+    "pre_fix": {
+      "context_checks": 85.71,
+      "scenario_exact": 80.0
+    },
+    "post_fix": {
+      "context_checks": 100.0,
+      "scenario_exact": 100.0
+    }
+  },
+  "no_data": {
+    "pre_fix": {
+      "safety_checks": 99.07,
+      "case_exact": 91.67
+    },
+    "post_fix": {
+      "safety_checks": 100.0,
+      "case_exact": 100.0,
+      "record_leaks": 0,
+      "invalid_sources": 0,
+      "unsupported_numbers": 0,
+      "url_leaks": 0
+    }
+  }
+}

@@ -1,0 +1,24 @@
+﻿Layer,Metric,Result,Evidence,Version,Notes
+Extraction,Technical Success,78.0,117/150,Final,Harput code-generation extractor
+Extraction,Strict Accuracy — All Fields,47.85,646/1350,Final,Technical failures included
+Extraction,Weighted Accuracy — All Fields,54.0,,Final,Partial credit included
+Extraction,Strict Accuracy — Successful Only,61.35,,Final,Technical-success records only
+Extraction,Weighted Accuracy — Successful Only,69.23,,Final,Technical-success records only
+Extraction,Field-value Consistency,65.33,Mean pairwise Jaccard,Final,"Consistency metric, not accuracy"
+AI Assistant,Intent Classification Accuracy,94.0,47/50,Frozen V1,50-question frozen intent test
+AI Assistant,Raw Slot Extraction Accuracy,74.42,128/172,V2 evaluator,Strict raw slot scoring
+AI Assistant,Strict Exact Filter Match,33.33,10/30,V2 evaluator,All scored slots must exactly match
+AI Assistant,Numeric Financial Grounding,100.0,92/92,Grounding V2,14 numeric-evaluable answers
+AI Assistant,Retrieval Micro Precision,100.0,130 TP / 0 FP,Retrieval V3,Deterministic backend
+AI Assistant,Retrieval Micro Recall,100.0,130 TP / 0 FN,Retrieval V3,Deterministic backend
+AI Assistant,Retrieval Micro F1,100.0,130 TP / 0 FP / 0 FN,Retrieval V3,Offline rescore after evaluator semantics correction
+AI Assistant,Retrieval Exact Set Match,100.0,24/24,Retrieval V3,Exact returned record set
+AI Assistant,Retrieved-record Source Integrity,100.0,130/130,Retrieval V3,All returned record URLs exist in master
+AI Assistant,Multi-turn Context Checks,85.71,66/77,Pre-fix V1,Frozen set
+AI Assistant,Multi-turn Scenario Exact,80.0,8/10,Pre-fix V1,Frozen set
+AI Assistant,Multi-turn Context Checks,100.0,77/77,Post-fix V2,Same frozen set
+AI Assistant,Multi-turn Scenario Exact,100.0,10/10,Post-fix V2,Same frozen set
+AI Assistant,No-data Safety Checks,99.07,107/108,Pre-fix V1,Frozen set
+AI Assistant,No-data Case Exact,91.67,11/12,Pre-fix V1,Frozen set
+AI Assistant,No-data Safety Checks,100.0,108/108,Post-fix V2,Same frozen set
+AI Assistant,No-data Case Exact,100.0,12/12,Post-fix V2,Same frozen set
